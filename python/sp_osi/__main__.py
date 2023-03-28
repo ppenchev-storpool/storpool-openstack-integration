@@ -5,10 +5,9 @@ the StorPool driver is up-to-date, and replace it if necessary.
 """
 
 import argparse
-import os
 import sys
 
-from typing import Callable, Dict, Tuple
+from typing import Callable, Tuple
 
 from sp_variant import variant as spvariant
 
@@ -17,6 +16,7 @@ from . import detect
 from . import groups
 from . import install
 from . import parse
+from . import u8loc
 
 
 def cmd_detect(cfg: defs.Config) -> None:
@@ -72,14 +72,6 @@ def cmd_validate(cfg: defs.Config) -> None:
         sys.exit("\n".join(["Errors found in the component definitions:"] + errors))
 
     print("The components definition file passed the internal checks")
-
-
-def get_utf8_env() -> Dict[str, str]:
-    """Oof, implement at least part of utf8-locale's functionality."""
-    utf8_env = dict(os.environ)
-    utf8_env["LC_ALL"] = "C.UTF-8"
-    utf8_env["LANGUAGE"] = ""
-    return utf8_env
 
 
 def parse_args() -> Tuple[defs.Config, Callable[[defs.Config], None]]:
@@ -158,7 +150,7 @@ def parse_args() -> Tuple[defs.Config, Callable[[defs.Config], None]]:
             if args.all:
                 assert not cfg.all_components.components
                 assert not cfg.utf8_env
-                cfg = cfg._replace(utf8_env=get_utf8_env())
+                cfg = cfg._replace(utf8_env=u8loc.detect())
                 cfg = cfg._replace(all_components=parse.read_components(cfg))
                 components = sorted(cfg.all_components.components.keys())
             else:
@@ -170,7 +162,7 @@ def parse_args() -> Tuple[defs.Config, Callable[[defs.Config], None]]:
     cfg = cfg._replace(components=components)
 
     if not cfg.utf8_env:
-        cfg = cfg._replace(utf8_env=get_utf8_env())
+        cfg = cfg._replace(utf8_env=u8loc.detect())
 
     if not cfg.all_components.components:
         cfg = cfg._replace(all_components=parse.read_components(cfg))
