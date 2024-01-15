@@ -32,6 +32,9 @@ nav:
   - 'Configure OpenStack': 'configure.md'
   - 'OpenStack Kolla integration': 'kolla.md'
   - 'Development': 'hacking.md'
+  - 'Command-line tools':
+    - 'Index': 'cmd/index.md'
+    - 'sp-openstack': 'cmd/sp-openstack.md'
   - 'Changelog': 'changes.md'
 markdown_extensions:
   - toc:
